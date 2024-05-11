@@ -34,61 +34,57 @@ disable_html_sanitization: true
 <div id="colorSquare"></div>
 
 <script type="module">
-function changeColorAndMove() {
-    var square = document.getElementById("colorSquare");
-    var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Generates a random hex color
-    square.style.backgroundColor = randomColor;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    // Get viewport dimensions
-    var viewportWidth = document.documentElement.clientWidth;
-    var viewportHeight = document.documentElement.clientHeight;
+    // Set canvas width and height
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    // Generate random coordinates within the viewport
-    var randomX = Math.floor(Math.random() * (viewportWidth - 100)); // Subtracting square width
-    var randomY = Math.floor(Math.random() * (viewportHeight - 100)); // Subtracting square height
+    // Square properties
+    let squareSize = 30;
+    let squareX = canvas.width / 2 - squareSize / 2;
+    let squareY = canvas.height / 2 - squareSize / 2;
+    let dx = 2;
+    let dy = 2;
 
-    // Set square position
-    square.style.left = randomX + 'px';
-    square.style.top = randomY + 'px';
-
-    // Generate random velocity for x and y directions
-    var vx = Math.random() * 10 - 5; // Random horizontal velocity between -5 and 5
-    var vy = Math.random() * 10 - 5; // Random vertical velocity between -5 and 5
-
-    // Update square position continuously
-    function moveSquare() {
-        // Get current square position
-        var currentX = parseFloat(square.style.left);
-        var currentY = parseFloat(square.style.top);
-
-        // Calculate new position
-        var newX = currentX + vx;
-        var newY = currentY + vy;
-
-        // Check if the square hits the boundaries
-        if (newX < 0 || newX + 100 > viewportWidth) {
-            vx = -vx; // Reverse horizontal velocity
-        }
-        if (newY < 0 || newY + 100 > viewportHeight) {
-            vy = -vy; // Reverse vertical velocity
-        }
-
-        // Update square position
-        square.style.left = newX + 'px';
-        square.style.top = newY + 'px';
+    // Function to generate a random color
+    function randomColor() {
+        return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
-    // Move the square every 50 milliseconds
-    var moveInterval = setInterval(moveSquare, 50);
+    // Function to draw a square
+    function drawSquare(x, y, size, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, size, size);
+    }
 
-    // Stop moving after 5 seconds
-    setTimeout(function() {
-        clearInterval(moveInterval);
-    }, 5000);
-}
+    function animate() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Change color, move, and bounce every 5 seconds
-setInterval(changeColorAndMove, 5000);
+        // Generate a random color for the square
+        const color = randomColor();
+
+        // Draw the square
+        drawSquare(squareX, squareY, squareSize, color);
+
+        // Move the square
+        squareX += dx;
+        squareY += dy;
+
+        // Reverse direction if hitting the canvas edges
+        if (squareX + squareSize > canvas.width || squareX < 0) {
+            dx = -dx;
+        }
+        if (squareY + squareSize > canvas.height || squareY < 0) {
+            dy = -dy;
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
 </script>
     
 </body>
